@@ -1,0 +1,3 @@
+# run the manager
+sudo /home/cloudera/cloudera-manager --force --enterprise
+
