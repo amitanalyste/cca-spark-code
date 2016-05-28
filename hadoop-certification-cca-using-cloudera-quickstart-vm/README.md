@@ -3,6 +3,8 @@ my sql access
 ### mysql-test
 my sql table
 ### start-cloudera-manager-ent
- how to start cl mng
+how to start cl mng
 ### tools-checks.sh
- hadoop tools 
+hadoop tools
+### work around spark
+work around to run spark in scala context // spark user space permissions
