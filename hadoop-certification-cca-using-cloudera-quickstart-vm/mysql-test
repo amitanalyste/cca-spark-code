@@ -1,0 +1,6 @@
+#default password is cloudera
+mysql -u root -p cloudera
+
+#use retail_db user with sqoop
+
+mysql -u retail_db -p cloudera
