@@ -11,3 +11,8 @@ hadoop fs -rm   /user/cloudera/testing
 spark-shell --version
 impala-shell --version
 flume ng version
+
+
+#ps
+ps -fu hdfs
+ps -ef | grep -i manager

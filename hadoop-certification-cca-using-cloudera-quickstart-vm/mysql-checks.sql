@@ -2,3 +2,4 @@
 show databases;
 use retail_db;
 show tables;
+help contents;
