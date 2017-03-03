@@ -1,0 +1,1 @@
+sqoop related mind map
