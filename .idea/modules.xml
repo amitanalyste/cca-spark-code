@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cca-spark-code.iml" filepath="$PROJECT_DIR$/cca-spark-code.iml" />
-      <module fileurl="file://$PROJECT_DIR$/flume/flume.iml" filepath="$PROJECT_DIR$/flume/flume.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spark/spark.iml" filepath="$PROJECT_DIR$/spark/spark.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sqoop/sqopp.iml" filepath="$PROJECT_DIR$/sqoop/sqopp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/02flume/flume.iml" filepath="$PROJECT_DIR$/02flume/flume.iml" />
+      <module fileurl="file://$PROJECT_DIR$/03spark/spark.iml" filepath="$PROJECT_DIR$/03spark/spark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/01sqoop/sqopp.iml" filepath="$PROJECT_DIR$/01sqoop/sqopp.iml" />
     </modules>
   </component>
 </project>
