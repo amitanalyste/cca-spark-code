@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cca-spark-code.iml" filepath="$PROJECT_DIR$/cca-spark-code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flume/flume.iml" filepath="$PROJECT_DIR$/flume/flume.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spark/spark.iml" filepath="$PROJECT_DIR$/spark/spark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sqoop/sqopp.iml" filepath="$PROJECT_DIR$/sqoop/sqopp.iml" />
+    </modules>
+  </component>
+</project>
