@@ -1,2 +1,0 @@
-# some practice with sqoop
-
