@@ -1,10 +1,6 @@
-import 
--D mapred.job.name=testsqoop 
 --connect 
 jdbc:mysql://quickstart.cloudera:3306/retail_db 
 --username 
 root 
 --password 
 cloudera
--m
-1 
