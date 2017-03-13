@@ -58,3 +58,8 @@ sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table r
 sqoop eval --options-file sqoop.opt --query "select max(order_id) from orders"
 hive -e "select max(order_id) from retail_stage.orders"
 
+## export
+#create a table holder to which export data from hive
+sqoop eval --options-file sqoop.opt --query "create table orders_export as select * from retail_db.orders where 1=0"
+sqoop export --options-file sqoop.opt --table orders_export --export-dir /user/hive/warehouse/retail_stage.db/orders --batch
+
