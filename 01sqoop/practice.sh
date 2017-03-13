@@ -30,9 +30,9 @@ sqoop import --options-file sqoop.opt --table orders --hive-import --compress --
 hdfs dfs -du -s -h /user/hive/w*/or*
 
 #overwrite data
- sqoop import --options-file sqoop.opt --table orders --hive-import --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec --hive-overwrite
+sqoop import --options-file sqoop.opt --table orders --hive-import --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec --hive-overwrite
 
-#def databse
+#def database
 hive -e "CREATE DATABASE IF NOT EXISTS retail_stage" 
 sqoop import --options-file sqoop.opt --table orders --hive-import --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec --hive-database retail_stage
 
@@ -45,4 +45,16 @@ sqoop import --options-file sqoop.opt --table orders -as-avrodatafile --target-d
 #boundary query
 sqoop import --options-file sqoop.opt --table orders --boundary-query "select 1, 100, 1000 from orders limit 1" -m 3
 
+# fields delimited and lines terminated by
+hive -f departments.hql
+sqoop import --options-file sqoop.opt --table departments --fields-terminated-by '|' --lines-terminated-by '\n' --hive-database retail_stage --hive-import --hive-table departments
+
+## manual append
+# initial data
+`sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table retail_stage.orders -where "order_id< 1000"
+# adding the data with append modality
+# adding new data in append
+sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table retail_stage.orders --check-column order_id --incremental append --last-value 1000
+sqoop eval --options-file sqoop.opt --query "select max(order_id) from orders"
+hive -e "select max(order_id) from retail_stage.orders"
 
