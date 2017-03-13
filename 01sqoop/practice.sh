@@ -51,7 +51,7 @@ sqoop import --options-file sqoop.opt --table departments --fields-terminated-by
 
 ## manual append
 # initial data
-`sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table retail_db.orders -where "order_id< 1000"
+sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table retail_db.orders -where "order_id< 1000"
 # adding the data with append modality
 # adding new data in append
 sqoop import --options-file sqoop.opt --table orders --hive-import -hive-table retail_db.orders --check-column order_id --incremental append --last-value 1000
