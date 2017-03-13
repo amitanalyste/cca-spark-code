@@ -1,5 +1,6 @@
 #remove hdfs
 hdfs dfs -rm -skipTrash -R /user/ma186082/sqoop_import/*
+hdfs dfs -rm -skipTrash -R /user/ma186082/*
 hdfs dfs -rm -skipTrash -R /user/hive/warehouse/*
 
 hive -e "drop table categories"
