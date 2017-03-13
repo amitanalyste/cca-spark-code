@@ -24,6 +24,9 @@ sqoop import --options-file sqoop.opt --table departments --target-dir 001  --ap
 
 #import all
 sqoop import-all-tables --options-file sqoop.opt --hive-import
+sqoop import-all-tables --options-file sqoop.opt --warehouse-dir /user/ma186082/sqoop_import
+ 
+
 
 #snappy codec
 sqoop import --options-file sqoop.opt --table orders --hive-import --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec
