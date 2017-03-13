@@ -1,0 +1,51 @@
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+17/03/13 03:13:58 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.8.0
+17/03/13 03:13:58 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+17/03/13 03:13:58 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+17/03/13 03:13:59 INFO tool.CodeGenTool: Beginning code generation
+17/03/13 03:13:59 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `departments_export` AS t LIMIT 1
+17/03/13 03:14:00 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `departments_export` AS t LIMIT 1
+17/03/13 03:14:00 INFO orm.CompilationManager: HADOOP_MAPRED_HOME is /usr/lib/hadoop-mapreduce
+Note: /tmp/sqoop-ma186082/compile/a03c9aafe0203f5511ce917c836723f2/departments_export.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+17/03/13 03:14:04 INFO orm.CompilationManager: Writing jar file: /tmp/sqoop-ma186082/compile/a03c9aafe0203f5511ce917c836723f2/departments_export.jar
+17/03/13 03:14:04 INFO mapreduce.ExportJobBase: Beginning export of departments_export
+17/03/13 03:14:05 INFO Configuration.deprecation: mapred.jar is deprecated. Instead, use mapreduce.job.jar
+17/03/13 03:14:05 INFO Configuration.deprecation: mapred.map.max.attempts is deprecated. Instead, use mapreduce.map.maxattempts
+17/03/13 03:14:06 INFO Configuration.deprecation: mapred.reduce.tasks.speculative.execution is deprecated. Instead, use mapreduce.reduce.speculative
+17/03/13 03:14:06 INFO Configuration.deprecation: mapred.map.tasks.speculative.execution is deprecated. Instead, use mapreduce.map.speculative
+17/03/13 03:14:06 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+17/03/13 03:14:06 INFO client.RMProxy: Connecting to ResourceManager at quickstart.cloudera/127.0.0.1:8032
+17/03/13 03:14:08 INFO input.FileInputFormat: Total input paths to process : 4
+17/03/13 03:14:08 INFO input.FileInputFormat: Total input paths to process : 4
+17/03/13 03:14:08 INFO mapreduce.JobSubmitter: number of splits:3
+17/03/13 03:14:08 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1489048776170_0042
+17/03/13 03:14:08 INFO impl.YarnClientImpl: Submitted application application_1489048776170_0042
+17/03/13 03:14:08 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1489048776170_0042/
+17/03/13 03:14:08 INFO mapreduce.Job: Running job: job_1489048776170_0042
+17/03/13 03:14:20 INFO mapreduce.Job: Job job_1489048776170_0042 running in uber mode : false
+17/03/13 03:14:20 INFO mapreduce.Job:  map 0% reduce 0%
+17/03/13 03:14:30 INFO mapreduce.Job:  map 100% reduce 0%
+17/03/13 03:14:30 INFO mapreduce.Job: Job job_1489048776170_0042 failed with state FAILED due to: Task failed task_1489048776170_0042_m_000001
+Job failed as tasks failed. failedMaps:1 failedReduces:0
+
+17/03/13 03:14:30 INFO mapreduce.Job: Counters: 12
+	Job Counters 
+		Failed map tasks=1
+		Killed map tasks=2
+		Launched map tasks=2
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=7360000
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=14375
+		Total vcore-seconds taken by all map tasks=14375
+		Total megabyte-seconds taken by all map tasks=7360000
+	Map-Reduce Framework
+		CPU time spent (ms)=0
+		Physical memory (bytes) snapshot=0
+		Virtual memory (bytes) snapshot=0
+17/03/13 03:14:30 WARN mapreduce.Counters: Group FileSystemCounters is deprecated. Use org.apache.hadoop.mapreduce.FileSystemCounter instead
+17/03/13 03:14:30 INFO mapreduce.ExportJobBase: Transferred 0 bytes in 24.4239 seconds (0 bytes/sec)
+17/03/13 03:14:30 INFO mapreduce.ExportJobBase: Exported 0 records.
+17/03/13 03:14:30 ERROR tool.ExportTool: Error during export: Export job failed!
