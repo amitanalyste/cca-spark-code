@@ -1,0 +1,22 @@
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+17/03/14 09:36:55 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.8.0
+17/03/14 09:36:55 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+17/03/14 09:36:55 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+17/03/14 09:36:55 INFO tool.CodeGenTool: Beginning code generation
+17/03/14 09:36:55 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `categories` AS t LIMIT 1
+17/03/14 09:36:56 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `categories` AS t LIMIT 1
+17/03/14 09:36:56 INFO orm.CompilationManager: HADOOP_MAPRED_HOME is /usr/lib/hadoop-mapreduce
+Note: /tmp/sqoop-ma186082/compile/0471b20c6aaba2359d86d126cc59ee9b/categories.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+17/03/14 09:36:58 INFO orm.CompilationManager: Writing jar file: /tmp/sqoop-ma186082/compile/0471b20c6aaba2359d86d126cc59ee9b/categories.jar
+17/03/14 09:36:58 WARN manager.MySQLManager: It looks like you are importing from mysql.
+17/03/14 09:36:58 WARN manager.MySQLManager: This transfer can be faster! Use the --direct
+17/03/14 09:36:58 WARN manager.MySQLManager: option to exercise a MySQL-specific fast path.
+17/03/14 09:36:58 INFO manager.MySQLManager: Setting zero DATETIME behavior to convertToNull (mysql)
+17/03/14 09:36:58 INFO mapreduce.ImportJobBase: Beginning import of categories
+17/03/14 09:36:58 INFO Configuration.deprecation: mapred.jar is deprecated. Instead, use mapreduce.job.jar
+17/03/14 09:36:59 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+17/03/14 09:36:59 INFO client.RMProxy: Connecting to ResourceManager at quickstart.cloudera/127.0.0.1:8032
+17/03/14 09:37:00 WARN security.UserGroupInformation: PriviledgedActionException as:ma186082 (auth:SIMPLE) cause:org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/ma186082/sqoop_import/categories already exists
+17/03/14 09:37:00 ERROR tool.ImportAllTablesTool: Encountered IOException running import job: org.apache.hadoop.mapred.FileAlreadyExistsException: Output directory hdfs://quickstart.cloudera:8020/user/ma186082/sqoop_import/categories already exists

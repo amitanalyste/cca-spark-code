@@ -81,26 +81,109 @@ for line  in dataRDD.collect():
 dataRDD.saveAsTextFile("/user/ma186082/pyspark/departments")
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 ## Move data between HDF-S and Spark - pyspark
 
+# read some text file
+sc.textFile("sqoop_import/departments").take(1)
 
-## Word count using pyspark
+# looping into a rdd
+data=sc.textFile("sqoop_import/departments")
+for i in data.collect():
+    print(i)
+
+# reading from local fs
+sc.textFile("file:///tmp/departments.json").take(3)
+
+# using split to tokenize
+>>> str = "hello, a word, after another one"
+>>> str.split(",")
+['hello', ' a word', ' after another one']
+>>> str.split(",")[1:]
+[' a word', ' after another one']
+
+# using map
+>>> rdd.map(lambda x : (None, x)).take(2)
+[(None, u'{"dep_id":1 , "dep_name":"fitness"}'), (None, u'{"dep_id":2 , "dep_name":"footware"}')]
+
+
+#using the map in the rdd
+
+c.textFile("sqoop_import/departments")
+>>> rdd.take(2)
+[u'2,Fitness', u'3,Footwear']
+
+# using the split to idx on the key and get the all the str as value
+>>> rdd = sc.textFile("sqoop_import/order_items")
+>>> for i in rdd.map(lambda x: tuple(x.split(","))).take(3):    print(i)
+...
+(u'1', u'1', u'957', u'1', u'299.98', u'299.98')
+(u'2', u'2', u'1073', u'1', u'199.99', u'199.99')
+(u'3', u'2', u'502', u'5', u'250.0', u'50.0')
+>>> for i in rdd.map(lambda x: tuple(x.split(",",1))).take(3):  print(i)
+...
+(u'1', u'1,957,1,299.98,299.98')
+(u'2', u'2,1073,1,199.99,199.99')
+(u'3', u'2,502,5,250.0,50.0')
+>>> for i in rdd.map(lambda x: tuple(x.split(",",2))).take(3):  print(i)
+...
+(u'1', u'1', u'957,1,299.98,299.98')
+(u'2', u'2', u'1073,1,199.99,199.99')
+(u'3', u'2', u'502,5,250.0,50.0')
+
+# rading from seuqnece files
+>>> rdd = sc.sequenceFile("pyspark/sqoop_import/order_items")                  # specifying the types
+>>> rdd = sc.sequenceFile("pyspark/sqoop_import/order_items", "org.apache.hadoop.io.IntWritable", "org.apache.hadoop.io.Text")
+
+# using .saveAsNewAPIHadoopFile
+>>> rdd = sc.textFile("sqoop_import/orders")
+>>> rdd.take(1)
+[u'1,2013-07-25 00:00:00.0,11599,CLOSED']
+>>> rdd.map(lambda x: tuple(x.split(",", 1))).saveAsNewAPIHadoopFile("pyspark/order_items/TT","org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat",keyClass="org.apache.hadoop.io.Text",valueClass="org.apache.hadoop.io.Text")
+>>>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Word count using pyspark
 
 
 ## Joining disparate data sets using pys park
-
 
 ## Aggregating data sets using pyspark - totals
 
