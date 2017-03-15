@@ -1,0 +1,17 @@
+MapReduce is a programming model and an associated
+implementation for processing and generating large
+data sets. Users specify a map function that processes a
+key/value pair to generate a set of intermediate key/value
+pairs, and a reduce function that merges all intermediate
+values associated with the same intermediate key. Many
+real world tasks are expressible in this model, as shown
+in the paper.
+Abstract—The Hadoop Distributed File System (HDFS) is
+designed to store very large data sets reliably, and to stream
+those data sets at high bandwidth to user applications. In a large
+cluster, thousands of servers both host directly attached storage
+and execute user application tasks. By distributing storage and
+computation across many servers, the resource can grow with
+demand while remaining economical at every size. We describe
+the architecture of HDFS and report on experience using HDFS
+to manage 25 petabytes of enterprise data at Yahoo!.
