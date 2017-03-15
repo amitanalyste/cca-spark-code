@@ -39,13 +39,13 @@ pyspark
 pyspark --master yarn
 
 
-#using hive  via HiveContxt
+#using hivevia HiveContxt
 ```
 from pyspark.sql import HiveContext
 sample = sqlContext.sql("select * from departments")
 
 for rec in sample.collect():
-  print(rec)
+print(rec)
 ```
 
 Row(department_id=2, department_name=u'Fitness')
@@ -65,7 +65,7 @@ from pyspark.sql import SQLContext
 sqlContext = SQLContext(sc)
 jdbcurl="jdbc:mysql://quickstart.cloudera:3306/retail_db?user=root&password=cloudera"
 df = sqlContext.load(source="jdbc", url=jdbcurl, dbtable="departments")
-for rec  in df.collect():
+for recin df.collect():
 	print(rec)
 
 
@@ -76,7 +76,7 @@ from pyspark import SparkContext, SparkConf
 conf = SparkConf().setAppName("myPyspark")
 sc = SparkContext(conf=conf)
 dataRDD = sc.textFile("/user/ma186082/sqoop_import/departments")
-for line  in dataRDD.collect():
+for linein dataRDD.collect():
 	print(line)
 dataRDD.saveAsTextFile("/user/ma186082/pyspark/departments")
 ```
@@ -89,58 +89,91 @@ sc.textFile("sqoop_import/departments").take(1)
 # looping into a rdd
 data=sc.textFile("sqoop_import/departments")
 for i in data.collect():
-    print(i)
+  print(i)
 
 # reading from local fs
 sc.textFile("file:///tmp/departments.json").take(3)
 
 # using split to tokenize
->>> str = "hello, a word, after another one"
->>> str.split(",")
+str = "hello, a word, after another one"
+str.split(",")
 ['hello', ' a word', ' after another one']
->>> str.split(",")[1:]
+str.split(",")[1:]
 [' a word', ' after another one']
 
 # using map
->>> rdd.map(lambda x : (None, x)).take(2)
+rdd.map(lambda x : (None, x)).take(2)
 [(None, u'{"dep_id":1 , "dep_name":"fitness"}'), (None, u'{"dep_id":2 , "dep_name":"footware"}')]
 
 
 #using the map in the rdd
 
 c.textFile("sqoop_import/departments")
->>> rdd.take(2)
+rdd.take(2)
 [u'2,Fitness', u'3,Footwear']
 
 # using the split to idx on the key and get the all the str as value
->>> rdd = sc.textFile("sqoop_import/order_items")
->>> for i in rdd.map(lambda x: tuple(x.split(","))).take(3):    print(i)
+rdd = sc.textFile("sqoop_import/order_items")
+for i in rdd.map(lambda x: tuple(x.split(","))).take(3):  print(i)
 ...
 (u'1', u'1', u'957', u'1', u'299.98', u'299.98')
 (u'2', u'2', u'1073', u'1', u'199.99', u'199.99')
 (u'3', u'2', u'502', u'5', u'250.0', u'50.0')
->>> for i in rdd.map(lambda x: tuple(x.split(",",1))).take(3):  print(i)
+for i in rdd.map(lambda x: tuple(x.split(",",1))).take(3):  print(i)
 ...
 (u'1', u'1,957,1,299.98,299.98')
 (u'2', u'2,1073,1,199.99,199.99')
 (u'3', u'2,502,5,250.0,50.0')
->>> for i in rdd.map(lambda x: tuple(x.split(",",2))).take(3):  print(i)
+for i in rdd.map(lambda x: tuple(x.split(",",2))).take(3):  print(i)
 ...
 (u'1', u'1', u'957,1,299.98,299.98')
 (u'2', u'2', u'1073,1,199.99,199.99')
 (u'3', u'2', u'502,5,250.0,50.0')
 
 # rading from seuqnece files
->>> rdd = sc.sequenceFile("pyspark/sqoop_import/order_items")                  # specifying the types
->>> rdd = sc.sequenceFile("pyspark/sqoop_import/order_items", "org.apache.hadoop.io.IntWritable", "org.apache.hadoop.io.Text")
+rdd = sc.sequenceFile("pyspark/sqoop_import/order_items")                  
+
+# specifying the types
+rdd = sc.sequenceFile("pyspark/sqoop_import/order_items", "org.apache.hadoop.io.IntWritable", "org.apache.hadoop.io.Text")
 
 # using .saveAsNewAPIHadoopFile
->>> rdd = sc.textFile("sqoop_import/orders")
->>> rdd.take(1)
+rdd = sc.textFile("sqoop_import/orders")
+rdd.take(1)
 [u'1,2013-07-25 00:00:00.0,11599,CLOSED']
->>> rdd.map(lambda x: tuple(x.split(",", 1))).saveAsNewAPIHadoopFile("pyspark/order_items/TT","org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat",keyClass="org.apache.hadoop.io.Text",valueClass="org.apache.hadoop.io.Text")
->>>
+rdd.map(lambda x: tuple(x.split(",", 1))).saveAsNewAPIHadoopFile("pyspark/order_items/TT","org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat",keyClass="org.apache.hadoop.io.Text",valueClass="org.apache.hadoop.io.Text")
  
+ 
+# using he hivecontext in spark
+from pyspark.sql import HiveContext
+sqlc= HiveContext(sc)
+data = sqlc.sql("select * from departments limit 1")
+for i in data.collect():    print(i)
+...
+
+Row(order_id=1, order_date=u'2013-07-25 00:00:00.0
+', order_customer_id=11599, order_status=u'CLOSED'
+)
+
+for i in data.collect():    print(i.order_id)
+
+# using sql context with json, temp table creation
+
+from pyspark import SQLContext
+sqlc = SQLContext(sc)
+departmentsJson = sqlc.jsonFile("departments.json")
+departmentsJson.registerTempTable("tdepartments")
+for i in sqlc.sql("select * from tdepartments").collect(): 	print(i)
+...
+Row(_corrupt_record=u'{department_id:2, department_name:Fitness}')
+Row(_corrupt_record=u'{department_id:3, department_name:Footwear}')
+Row(_corrupt_record=u'{department_id:4, department_name:Apparel}')
+Row(_corrupt_record=u'{department_id:5, department_name:Golf}')
+Row(_corrupt_record=u'{department_id:6, department_name:Outdoors}')
+Row(_corrupt_record=u'{department_id:7, department_name:Fan Shop}')
+
+# save as json
+sqlc.sql("select * from tdepartments").toJSON().saveAsTextFile("tdepartments.json")
+hdfs dfs -cat tdepartments.json
 
 
 
@@ -172,6 +205,7 @@ c.textFile("sqoop_import/departments")
 
 
 
+#
 
 
 
@@ -180,7 +214,29 @@ c.textFile("sqoop_import/departments")
 
 
 
-# Word count using pyspark
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Word count using pyspark
 
 
 ## Joining disparate data sets using pys park
