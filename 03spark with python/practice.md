@@ -219,6 +219,75 @@ dataR.saveAsTextFile("wc.out")
 # Joining disparate data sets using pys park
 
 
+> Problem statement, get the revenue and number of orders from order_items on daily basis
+## get orders and o items 
+ordersRDD = sc.textFile("sqoop_import/orders")
+orderItemsRDD = sc.textFile("sqoop_import/order_items")
+
+## check the contents
+>>> for i in ordersRDD.map(lambda o : (o.split(",") )).take(3) : print(i)
+...
+[u'1', u'2013-07-25 00:00:00.0', u'11599', u'CLOSED']
+[u'2', u'2013-07-25 00:00:00.0', u'256', u'PENDING_PAYMENT']
+[u'3', u'2013-07-25 00:00:00.0', u'12111', u'COMPLETE']
+
+>>> for i in ordersRDD.map(lambda o : (o.split(",")[0], o.split(",")[1] )).take(3) : print(i)
+...
+(u'1', u'2013-07-25 00:00:00.0')
+(u'2', u'2013-07-25 00:00:00.0')
+(u'3', u'2013-07-25 00:00:00.0')
+
+## only relevant fields for problem and proper type
+>>> for i in ordersRDD.map(lambda o : (int(o.split(",")[0]), o.split(",")[1] )).take(3) : print(i)
+...
+(1, u'2013-07-25 00:00:00.0')
+(2, u'2013-07-25 00:00:00.0')
+(3, u'2013-07-25 00:00:00.0')
+
+## to join 2 tables on order_id we need pk order_id and record from orders and fk order_id and record from order_items
+
+ordersParsedRDD = ordersRDD.map(lambda rec: (int(rec.split(",")[0]), rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split(",")[1]), rec))
+
+## joined table
+rdersJoinOrderItems = orderItemsParsedRDD.join(ordersParsedRDD)
+
+for rec in ordersJoinOrderItems.first():     print(rec)
+...
+2
+(u'2,2,1073,1,199.99,199.99', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT')
+## drilling int the result
+>>> for rec in ordersJoinOrderItems.map(lambda o: (o[0])).take(3):       print(rec)                   ...
+2
+2
+2
+>>> for rec in ordersJoinOrderItems.map(lambda o: (o[1])).take(3):       print(rec)
+...
+(u'2,2,1073,1,199.99,199.99', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT')
+(u'3,2,502,5,250.0,50.0', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT')
+(u'4,2,403,1,129.99,129.99', u'2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT')
+>>> for rec in ordersJoinOrderItems.map(lambda o: (o[1][0])).take(3):    print(rec)
+...
+2,2,1073,1,199.99,199.99
+3,2,502,5,250.0,50.0
+4,2,403,1,129.99,129.99
+>>> for rec in ordersJoinOrderItems.map(lambda o: (o[1][1])).take(3):    print(rec)
+...
+2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT
+2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT
+2,2013-07-25 00:00:00.0,256,PENDING_PAYMENT
+>>>
+
+## get only relevant fields for the problem (sub_total and day)
+revenuePerOrderPerDayRDD = ordersJoinOrderItems.map(lambda t: (t[1][1].split(",")[1], float(t[1][0].split(",")[4])))
+ in revenuePerOrderPerDayRDD.take(3):  print(i)
+...
+(u'2013-07-25 00:00:00.0', 199.99000000000001)
+(u'2013-07-25 00:00:00.0', 250.0)
+(u'2013-07-25 00:00:00.0', 129.99000000000001)
+
+
+
 # Aggregating data sets using pyspark - totals
 
 
