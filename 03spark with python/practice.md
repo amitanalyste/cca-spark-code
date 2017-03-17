@@ -426,9 +426,25 @@ for data in joinAggData.collect():
 ```
 
 
-
-
 # Aggregating data sets using pyspark - totals
+
+## Get max priced product from products table
+orders = sc.textFile("sqoop_import/orders")
+orderItems = sc.textFile("sqoop_import/order_items")
+orderItemsMap = orderItems.map(lambda rec: float(rec.split("|")[4]))
+for i in orderItemsMap.take(5): print i
+
+orderItemsReduce = orderItemsMap.reduce(lambda rev1, rev2: rev1 + rev2)
+
+### pyspark script to get the max priced product
+products = sc.textFile("sqoop_import/products")
+productsMap = products.map(lambda rec: rec)
+productsMap.reduce(lambda rec1, rec2: (rec1 if( float(rec1.split("|")[4]) >= float(rec2.split("|")[4])) else rec2))
+
+### avg
+totalRevenue = sc.textFile("sqoop_import/order_items").map(lambda rec: float(rec.split(",")[4])).reduce(lambda acc, val: acc + rev2)
+totalOrders = sc.textFile("sqoop_import/order_items").map(lambda rec: int(rec.split(",")[1])).distinct().count()
+avg = totalRevenue / totalOrders
 
 
 # Aggregating data sets using pyspark - by key
