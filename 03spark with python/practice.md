@@ -449,6 +449,116 @@ avg = totalRevenue / totalOrders
 
 # Aggregating data sets using pyspark - by key
 
+## counting order status	
+```
+>>> orders.map(lambda rec: (rec.split("|")[3], 0 ))
+>>> orders.map(lambda rec: (rec.split("|")[3], 0 )).countByKey()
+defaultdict(<type 'int'>, {u'COMPLETE': 22899, u'PAYMENT_REVIEW': 729, u'PROCESSING': 8275, u'CANCELED': 1428, u'PENDING': 7610, u'CLOSED': 7556, u'PENDING_PAYMENT': 15030, u'SUSPECTED_FRAUD': 1558, u'ON_HOLD': 3798})
+>>> orders.map(lambda rec: (rec.split("|")[3], 0 )).countByKey().items()
+[(u'COMPLETE', 22899), (u'PAYMENT_REVIEW', 729), (u'PROCESSING', 8275), (u'CANCELED', 1428), (u'PENDING', 7610), (u'CLOSED', 7556), (u'PENDING_PAYMENT', 15030), (u'SUSPECTED_FRAUD', 1558), (u'ON_HOLD', 3798)]
+
+
+orders = sc.textFile("sqoop_import/orders")
+
+#groupbykey
+ordersMap = orders.map(lambda rec: (rec.split("|")[3], 1) )
+ordersByStatusGBK = ordersMap.groupByKey().map(lambda t: (t[0], sum(t[1])))
+for i in ordersMap.countByKey().items(): print(i)
+
+#reduce by key (using the accumulator)
+ordersByStatusRBK = ordersMap.reduceByKey(lambda acc, val: acc+val)
+
+#aggregate by key
+ordersByStatusABK = ordersMap.aggregateByKey(0, lambda acc, value: acc+1, lambda acc, value: acc+value)
+
+#combine by key
+ordersByStatusCBK = ordersMap.combineByKey(lambda value: (1), lambda acc, value: (acc+1), lambda acc, value: (acc+value) )
+
+```
+
+##Total Revenue per day
+ordersRDD = sc.textFile("sqoop_import/orders")
+orderItemsRDD = sc.textFile("sqoop_import/order_items")
+
+ordersParsedRDD = ordersRDD.map(lambda rec: (rec.split("|")[0], rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (rec.split("|")[1], rec))
+
+ordersJoinOrderItems = orderItemsParsedRDD.join(ordersParsedRDD)
+ordersJoinOrderItemsMap = ordersJoinOrderItems.map(lambda t: (t[1][1].split("|")[1], float(t[1][0].split("|")[4])))
+
+revenuePerDay = ordersJoinOrderItemsMap.reduceByKey(lambda acc, value: acc + value)
+for i in revenuePerDay.collect(): print(i)
+
+## average revenue per day
+
+Use appropriate aggregate function to get sum(order_item_subtotal) for each order_date, order_id combination
+Parse data to discard order_id and get order_date as key and sum(order_item_subtotal) per order as value
+Use appropriate aggregate function to get sum(order_item_subtotal) per day and count(distinct order_id) per day
+
+ordersRDD = sc.textFile("sqoop_import/orders")
+orderItemsRDD = sc.textFile("sqoop_import/order_items")
+
+ordersParsedRDD = ordersRDD.map(lambda rec: (rec.split("|")[0], rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (rec.split("|")[1], rec))
+
+ordersJoinOrderItems = orderItemsParsedRDD.join(ordersParsedRDD)
+ordersJoinOrderItemsMap = ordersJoinOrderItems.map(lambda t: ((t[1][1].split("|")[1], t[0]), float(t[1][0].split("|")[4])))
+
+>>> for i in ordersJoinOrderItemsMap.sortByKey().take(5): print(i)
+...
+((u'2013-07-25 00:00:00.0', u'1'), 299.98000000000002)
+((u'2013-07-25 00:00:00.0', u'10'), 199.99000000000001)
+((u'2013-07-25 00:00:00.0', u'10'), 99.959999999999994)
+((u'2013-07-25 00:00:00.0', u'10'), 129.99000000000001)
+((u'2013-07-25 00:00:00.0', u'10'), 21.989999999999998)
+
+
+revenuePerDayPerOrder = ordersJoinOrderItemsMap.reduceByKey(lambda acc, value: acc + value)
+>>> for i in revenuePerDayPerOrder.sortByKey().take(5): print(i)             ...
+((u'2013-07-25 00:00:00.0', u'1'), 299.98000000000002)
+((u'2013-07-25 00:00:00.0', u'10'), 651.92000000000007)
+((u'2013-07-25 00:00:00.0', u'100'), 549.94000000000005)
+((u'2013-07-25 00:00:00.0', u'101'), 899.94000000000005)
+((u'2013-07-25 00:00:00.0', u'103'), 829.92000000000007)
+i
+revenuePerDayPerOrderMap = revenuePerDayPerOrder.map(lambda rec: (rec[0][0], rec[1]))
+>>>revenuePerDayPerOrderMap.count()
+57431
+
+>>> for i in revenuePerDayPerOrderMap.sortByKey().take(5): print(i)          ...
+(u'2013-07-25 00:00:00.0', 549.94000000000005)
+(u'2013-07-25 00:00:00.0', 579.98000000000002)
+(u'2013-07-25 00:00:00.0', 599.89999999999998)
+(u'2013-07-25 00:00:00.0', 699.88999999999999)
+(u'2013-07-25 00:00:00.0', 150.0)
+
+revenuePerDay = revenuePerDayPerOrderMap.combineByKey( \
+lambda x: (x, 1), \
+lambda acc, revenue: (acc[0] + revenue, acc[1] + 1), \
+lambda total1, total2: (round(total1[0] + total2[0], 2), total1[1] + total2[1]) \
+)
+>>> for i in revenuePerDay.sortByKey().take(5): print(i)
+...
+(u'2013-07-25 00:00:00.0', (68153.830000000002, 116))
+(u'2013-07-26 00:00:00.0', (136520.17000000001, 233))
+(u'2013-07-27 00:00:00.0', (101074.34, 175))
+(u'2013-07-28 00:00:00.0', (87123.080000000002, 158))
+(u'2013-07-29 00:00:00.0', (137287.09, 216))
+>>> revenuePerDay.count()
+364
+
+
+avgRevenuePerDay = revenuePerDaymap(lambda x: (x[0], x[1][0] / x[1][1]))
+>>> for i in avgRevenuePerDay.sortByKey().take(5): print(i)
+...
+(u'2013-07-25 00:00:00.0', 587.5330172413793)
+(u'2013-07-26 00:00:00.0', 585.92347639484979)
+(u'2013-07-27 00:00:00.0', 577.56765714285712)
+(u'2013-07-28 00:00:00.0', 551.41189873417727)
+(u'2013-07-29 00:00:00.0', 635.58837962962957)
+>>> avgRevenuePerDay.count()
+364
+
 
 # Filtering data using pyspark
 
