@@ -476,7 +476,8 @@ ordersByStatusCBK = ordersMap.combineByKey(lambda value: (1), lambda acc, value:
 
 ```
 
-##Total Revenue per day
+## total Revenue per day
+```
 ordersRDD = sc.textFile("sqoop_import/orders")
 orderItemsRDD = sc.textFile("sqoop_import/order_items")
 
@@ -488,13 +489,17 @@ ordersJoinOrderItemsMap = ordersJoinOrderItems.map(lambda t: (t[1][1].split("|")
 
 revenuePerDay = ordersJoinOrderItemsMap.reduceByKey(lambda acc, value: acc + value)
 for i in revenuePerDay.collect(): print(i)
+```
 
 ## average revenue per day
 
-Use appropriate aggregate function to get sum(order_item_subtotal) for each order_date, order_id combination
-Parse data to discard order_id and get order_date as key and sum(order_item_subtotal) per order as value
-Use appropriate aggregate function to get sum(order_item_subtotal) per day and count(distinct order_id) per day
+>Use appropriate aggregate function to get sum(order_item_subtotal) for each order_date, order_id combination
 
+>Parse data to discard order_id and get order_date as key and sum(order_item_subtotal) per order as value
+
+>Use appropriate aggregate function to get sum(order_item_subtotal) per day and count(distinct order_id) per day
+
+```
 ordersRDD = sc.textFile("sqoop_import/orders")
 orderItemsRDD = sc.textFile("sqoop_import/order_items")
 
@@ -503,42 +508,44 @@ orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (rec.split("|")[1], rec))
 
 ordersJoinOrderItems = orderItemsParsedRDD.join(ordersParsedRDD)
 ordersJoinOrderItemsMap = ordersJoinOrderItems.map(lambda t: ((t[1][1].split("|")[1], t[0]), float(t[1][0].split("|")[4])))
-
+```
 >>> for i in ordersJoinOrderItemsMap.sortByKey().take(5): print(i)
-...
 ((u'2013-07-25 00:00:00.0', u'1'), 299.98000000000002)
 ((u'2013-07-25 00:00:00.0', u'10'), 199.99000000000001)
 ((u'2013-07-25 00:00:00.0', u'10'), 99.959999999999994)
 ((u'2013-07-25 00:00:00.0', u'10'), 129.99000000000001)
 ((u'2013-07-25 00:00:00.0', u'10'), 21.989999999999998)
 
-
+```
 revenuePerDayPerOrder = ordersJoinOrderItemsMap.reduceByKey(lambda acc, value: acc + value)
+```
 >>> for i in revenuePerDayPerOrder.sortByKey().take(5): print(i)             ...
 ((u'2013-07-25 00:00:00.0', u'1'), 299.98000000000002)
 ((u'2013-07-25 00:00:00.0', u'10'), 651.92000000000007)
 ((u'2013-07-25 00:00:00.0', u'100'), 549.94000000000005)
 ((u'2013-07-25 00:00:00.0', u'101'), 899.94000000000005)
 ((u'2013-07-25 00:00:00.0', u'103'), 829.92000000000007)
-i
+
+```
 revenuePerDayPerOrderMap = revenuePerDayPerOrder.map(lambda rec: (rec[0][0], rec[1]))
+```
 >>>revenuePerDayPerOrderMap.count()
 57431
-
->>> for i in revenuePerDayPerOrderMap.sortByKey().take(5): print(i)          ...
+>>> for i in revenuePerDayPerOrderMap.sortByKey().take(5): print(i)          
 (u'2013-07-25 00:00:00.0', 549.94000000000005)
 (u'2013-07-25 00:00:00.0', 579.98000000000002)
 (u'2013-07-25 00:00:00.0', 599.89999999999998)
 (u'2013-07-25 00:00:00.0', 699.88999999999999)
 (u'2013-07-25 00:00:00.0', 150.0)
 
+```
 revenuePerDay = revenuePerDayPerOrderMap.combineByKey( \
 lambda x: (x, 1), \
 lambda acc, revenue: (acc[0] + revenue, acc[1] + 1), \
 lambda total1, total2: (round(total1[0] + total2[0], 2), total1[1] + total2[1]) \
 )
+```
 >>> for i in revenuePerDay.sortByKey().take(5): print(i)
-...
 (u'2013-07-25 00:00:00.0', (68153.830000000002, 116))
 (u'2013-07-26 00:00:00.0', (136520.17000000001, 233))
 (u'2013-07-27 00:00:00.0', (101074.34, 175))
@@ -547,8 +554,9 @@ lambda total1, total2: (round(total1[0] + total2[0], 2), total1[1] + total2[1]) 
 >>> revenuePerDay.count()
 364
 
-
+```
 avgRevenuePerDay = revenuePerDaymap(lambda x: (x[0], x[1][0] / x[1][1]))
+```
 >>> for i in avgRevenuePerDay.sortByKey().take(5): print(i)
 ...
 (u'2013-07-25 00:00:00.0', 587.5330172413793)
