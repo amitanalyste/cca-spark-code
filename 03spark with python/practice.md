@@ -583,8 +583,44 @@ avgRevenuePerDay = revenuePerDaymap(lambda x: (x[0], x[1][0] / x[1][1]))
 
 ```
 # Filtering data using pyspark
+```
+```
+## into a smaller dataset using Spark
+```python
+ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
+for i in ordersRDD.filter(lambda line: line.split(",")[3] == "COMPLETE").take(5): print(i)
 
+for i in ordersRDD.filter(lambda line: "PENDING" in line.split(",")[3]).take(5): print(i)
 
+for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 100).take(5): print(i)
+ 
+for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 100 or line.split(",")[3] in "PENDING").take(5): print(i)
+ 
+for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 1000 and ("PENDING" in line.split(",")[3] or line.split(",")[3] == ("CANCELLED"))).take(5): print(i)
+ 
+for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 1000 and line.split(",")[3] != ("COMPLETE")).take(5): print(i)
+
+```
+```
+## Check if there are any cancelled orders with amount greater than 1000$
+```python
+#Get only cancelled orders
+#Join orders and order items
+#Generate sum(order_item_subtotal) per order
+#Filter data which amount to greater than 1000$
+
+ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
+orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items")
+
+ordersParsedRDD = ordersRDD.filter(lambda rec: rec.split(",")[3] in "CANCELED").map(lambda rec: (int(rec.split(",")[0]), rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split(",")[1]), float(rec.split(",")[4])))
+orderItemsAgg = orderItemsParsedRDD.reduceByKey(lambda acc, value: (acc + value))
+
+ordersJoinOrderItems = orderItemsAgg.join(ordersParsedRDD)
+
+for i in ordersJoinOrderItems.filter(lambda rec: rec[1][0] >= 1000).take(5): print(i)
+
+```
 # Sorting and Ranking using pyspark - global
 
 
