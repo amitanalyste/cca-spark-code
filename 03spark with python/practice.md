@@ -111,9 +111,9 @@ sc.textFile("file:///tmp/departments.json").take(3)
 ## using split to tokenize
 ```
 str = "hello, a word, after another one"
-str.split(",")
+str.split('\x01')
 ['hello', ' a word', ' after another one']
-str.split(",")[1:]
+str.split('\x01')[1:]
 [' a word', ' after another one']
 
 ```
@@ -133,17 +133,17 @@ rdd.take(2)
 ## using the split to idx on the key and get the all the str as value
 ```
 rdd = sc.textFile("sqoop_import/order_items")
-for i in rdd.map(lambda x: tuple(x.split(","))).take(3):  print(i)
+for i in rdd.map(lambda x: tuple(x.split('\x01'))).take(3):  print(i)
 ...
 (u'1', u'1', u'957', u'1', u'299.98', u'299.98')
 (u'2', u'2', u'1073', u'1', u'199.99', u'199.99')
 (u'3', u'2', u'502', u'5', u'250.0', u'50.0')
-for i in rdd.map(lambda x: tuple(x.split(",",1))).take(3):  print(i)
+for i in rdd.map(lambda x: tuple(x.split('\x01',1))).take(3):  print(i)
 ...
 (u'1', u'1,957,1,299.98,299.98')
 (u'2', u'2,1073,1,199.99,199.99')
 (u'3', u'2,502,5,250.0,50.0')
-for i in rdd.map(lambda x: tuple(x.split(",",2))).take(3):  print(i)
+for i in rdd.map(lambda x: tuple(x.split('\x01',2))).take(3):  print(i)
 ...
 (u'1', u'1', u'957,1,299.98,299.98')
 (u'2', u'2', u'1073,1,199.99,199.99')
@@ -165,7 +165,7 @@ rdd = sc.sequenceFile("pyspark/sqoop_import/order_items", "org.apache.hadoop.io.
 rdd = sc.textFile("sqoop_import/orders")
 rdd.take(1)
 [u'1,2013-07-25 00:00:00.0,11599,CLOSED']
-rdd.map(lambda x: tuple(x.split(",", 1))).saveAsNewAPIHadoopFile("pyspark/order_items/TT","org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat",keyClass="org.apache.hadoop.io.Text",valueClass="org.apache.hadoop.io.Text")
+rdd.map(lambda x: tuple(x.split('\x01', 1))).saveAsNewAPIHadoopFile("pyspark/order_items/TT'\x01'org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat",keyClass="org.apache.hadoop.io.Text",valueClass="org.apache.hadoop.io.Text")
  
 ```
 ## using he hivecontext in spark
@@ -262,13 +262,13 @@ orderItemsRDD = sc.textFile("sqoop_import/order_items")
 ```
 ## check the contents
 ```
-for i in ordersRDD.map(lambda o : (o.split(",") )).take(3) : print(i)
+for i in ordersRDD.map(lambda o : (o.split('\x01') )).take(3) : print(i)
 ...
 [u'1', u'2013-07-25 00:00:00.0', u'11599', u'CLOSED']
 [u'2', u'2013-07-25 00:00:00.0', u'256', u'PENDING_PAYMENT']
 [u'3', u'2013-07-25 00:00:00.0', u'12111', u'COMPLETE']
 
-for i in ordersRDD.map(lambda o : (o.split(",")[0], o.split(",")[1] )).take(3) : print(i)
+for i in ordersRDD.map(lambda o : (o.split('\x01')[0], o.split('\x01')[1] )).take(3) : print(i)
 ...```
 (u'1', u'2013-07-25 00:00:00.0')
 (u'2',``` u'2013-07-25 00:00:00.0')
@@ -277,7 +277,7 @@ for i in ordersRDD.map(lambda o : (o.split(",")[0], o.split(",")[1] )).take(3) :
 ```
 ## only relevant fields for problem and proper type
 ```
-for i in ordersRDD.map(lambda o : (int(o.split(",")[0]), o.split(",")[1] )).take(3) : print(i)
+for i in ordersRDD.map(lambda o : (int(o.split('\x01')[0]), o.split('\x01')[1] )).take(3) : print(i)
 ...
 (1, u'2013-07-25 00:00:00.0')
 (2, u'2013-07-25 00:00:00.0')
@@ -286,8 +286,8 @@ for i in ordersRDD.map(lambda o : (int(o.split(",")[0]), o.split(",")[1] )).take
 ```
 ## to join 2 tables on order_id we need pk order_id and record from orders and fk order_id and record from order_items
 ```
-ordersParsedRDD = ordersRDD.map(lambda rec: (int(rec.split(",")[0]), rec))
-orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split(",")[1]), rec))
+ordersParsedRDD = ordersRDD.map(lambda rec: (int(rec.split('\x01')[0]), rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split('\x01')[1]), rec))
 
 ```
 ## joined table
@@ -325,7 +325,7 @@ for rec in ordersJoinOrderItems.map(lambda o: (o[1][1])).take(3):    print(rec)
 ```
 ## get only relevant fields for the problem (sub_total and day)
 ```
-revenuePerOrderPerDayRDD = ordersJoinOrderItems.map(lambda t: (t[1][1].split(",")[1], float(t[1][0].split(",")[4])))
+revenuePerOrderPerDayRDD = ordersJoinOrderItems.map(lambda t: (t[1][1].split('\x01')[1], float(t[1][0].split('\x01')[4])))
  in revenuePerOrderPerDayRDD.take(3):  print(i)
 ...
 (u'2013-07-25 00:00:00.0', 199.99000000000001)
@@ -335,14 +335,14 @@ revenuePerOrderPerDayRDD = ordersJoinOrderItems.map(lambda t: (t[1][1].split(","
 ```
 ## build items with 
 ```
-for i in ordersJoinOrderItems.map(lambda rec: rec[1][1].split(",")[1] + "|" + str(rec[0])).take(10):        print(i)
+for i in ordersJoinOrderItems.map(lambda rec: rec[1][1].split('\x01')[1] + "|" + str(rec[0])).take(10):        print(i)
 ...
 2013-07-25 00:00:00.0|2
 2013-07-25 00:00:00.0|2
 2013-07-25 00:00:00.0|2
 2013-07-25 00:00:00.0|4
 2013-07-25 00:00:00.0|4
-ordersPerDay= ordersJoinOrderItems.map(lambda rec: rec[1][1].split(",")[1] + "|" + str(rec[0]))
+ordersPerDay= ordersJoinOrderItems.map(lambda rec: rec[1][1].split('\x01')[1] + "|" + str(rec[0]))
 
 for i in ordersPerDay.map(lambda rec: (rec.split("|")[0], 1)).first(): print(i)
 ...
@@ -413,14 +413,14 @@ sqlContext = SQLContext(sc)
 sqlContext.sql("set spark.sql.shuffle.partitions=10");
 
 ordersRDD = sc.textFile("sqoop_import/orders")
-ordersMap = ordersRDD.map(lambda o: o.split(","))
+ordersMap = ordersRDD.map(lambda o: o.split('\x01'))
 orders = ordersMap.map(lambda o: Row(order_id=int(o[0]), order_date=o[1], \
 order_customer_id=int(o[2]), order_status=o[3]))
 ordersSchema = sqlContext.inferSchema(orders)
 ordersSchema.registerTempTable("orders")
 
 orderItemsRDD = sc.textFile("sqoop_import/order_items")
-orderItemsMap = orderItemsRDD.map(lambda oi: oi.split(","))
+orderItemsMap = orderItemsRDD.map(lambda oi: oi.split('\x01'))
 orderItems = orderItemsMap.map(lambda oi: Row(order_item_id=int(oi[0]), order_item_order_id=int(oi[1]), \
 order_item_product_id=int(oi[2]), order_item_quantity=int(oi[3]), order_item_subtotal=float(oi[4]), \
 order_item_product_price=float(oi[5])))
@@ -455,8 +455,8 @@ productsMap.reduce(lambda rec1, rec2: (rec1 if( float(rec1.split("|")[4]) >= flo
 ```
 ### avg
 ```python
-totalRevenue = sc.textFile("sqoop_import/order_items").map(lambda rec: float(rec.split(",")[4])).reduce(lambda acc, val: acc + rev2)
-totalOrders = sc.textFile("sqoop_import/order_items").map(lambda rec: int(rec.split(",")[1])).distinct().count()
+totalRevenue = sc.textFile("sqoop_import/order_items").map(lambda rec: float(rec.split('\x01')[4])).reduce(lambda acc, val: acc + rev2)
+totalOrders = sc.textFile("sqoop_import/order_items").map(lambda rec: int(rec.split('\x01')[1])).distinct().count()
 avg = totalRevenue / totalOrders
 
 ```
@@ -588,17 +588,17 @@ avgRevenuePerDay = revenuePerDaymap(lambda x: (x[0], x[1][0] / x[1][1]))
 ## into a smaller dataset using Spark
 ```python
 ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
-for i in ordersRDD.filter(lambda line: line.split(",")[3] == "COMPLETE").take(5): print(i)
+for i in ordersRDD.filter(lambda line: line.split('\x01')[3] == "COMPLETE").take(5): print(i)
 
-for i in ordersRDD.filter(lambda line: "PENDING" in line.split(",")[3]).take(5): print(i)
+for i in ordersRDD.filter(lambda line: "PENDING" in line.split('\x01')[3]).take(5): print(i)
 
-for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 100).take(5): print(i)
+for i in ordersRDD.filter(lambda line: int(line.split('\x01')[0]) > 100).take(5): print(i)
  
-for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 100 or line.split(",")[3] in "PENDING").take(5): print(i)
+for i in ordersRDD.filter(lambda line: int(line.split('\x01')[0]) > 100 or line.split('\x01')[3] in "PENDING").take(5): print(i)
  
-for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 1000 and ("PENDING" in line.split(",")[3] or line.split(",")[3] == ("CANCELLED"))).take(5): print(i)
+for i in ordersRDD.filter(lambda line: int(line.split('\x01')[0]) > 1000 and ("PENDING" in line.split('\x01')[3] or line.split('\x01')[3] == ("CANCELLED"))).take(5): print(i)
  
-for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 1000 and line.split(",")[3] != ("COMPLETE")).take(5): print(i)
+for i in ordersRDD.filter(lambda line: int(line.split('\x01')[0]) > 1000 and line.split('\x01')[3] != ("COMPLETE")).take(5): print(i)
 
 ```
 ```
@@ -612,8 +612,8 @@ for i in ordersRDD.filter(lambda line: int(line.split(",")[0]) > 1000 and line.s
 ordersRDD = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
 orderItemsRDD = sc.textFile("/user/hive/warehouse/retail_db.db/order_items")
 
-ordersParsedRDD = ordersRDD.filter(lambda rec: rec.split(",")[3] in "CANCELED").map(lambda rec: (int(rec.split(",")[0]), rec))
-orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split(",")[1]), float(rec.split(",")[4])))
+ordersParsedRDD = ordersRDD.filter(lambda rec: rec.split('\x01')[3] in "CANCELED").map(lambda rec: (int(rec.split('\x01')[0]), rec))
+orderItemsParsedRDD = orderItemsRDD.map(lambda rec: (int(rec.split('\x01')[1]), float(rec.split('\x01')[4])))
 orderItemsAgg = orderItemsParsedRDD.reduceByKey(lambda acc, value: (acc + value))
 
 ordersJoinOrderItems = orderItemsAgg.join(ordersParsedRDD)
@@ -622,7 +622,54 @@ for i in ordersJoinOrderItems.filter(lambda rec: rec[1][0] >= 1000).take(5): pri
 
 ```
 # Sorting and Ranking using pyspark - global
+# Write a query that produces ranked or sorted data using Spark
 
+## Global sorting and ranking
+```python
+orders = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
+>>> for i in orders.map(lambda rec: (int(rec.split('\x01')[0]), rec)).sortByKey().take(5): print(i)
+...
+(1, u'1\x012013-07-25 00:00:00.0\x0111599\x01CLOSED')
+(2, u'2\x012013-07-25 00:00:00.0\x01256\x01PENDING_PAYMENT')
+(3, u'3\x012013-07-25 00:00:00.0\x0112111\x01COMPLETE')
+(4, u'4\x012013-07-25 00:00:00.0\x018827\x01CLOSED')
+(5, u'5\x012013-07-25 00:00:00.0\x0111318\x01COMPLETE')
+>>> for i in orders.map(lambda rec: (int(rec.split('\x01')[0]), rec)).sortByKey(False).take(5): print(i)
+...
+(68883, u'68883\x012014-07-23 00:00:00.0\x015533\x01COMPLETE')
+(68882, u'68882\x012014-07-22 00:00:00.0\x0110000\x01ON_HOLD')
+(68881, u'68881\x012014-07-19 00:00:00.0\x012518\x01PENDING_PAYMENT')
+(68880, u'68880\x012014-07-13 00:00:00.0\x011117\x01COMPLETE')
+(68879, u'68879\x012014-07-09 00:00:00.0\x01778\x01COMPLETE')
+>>> for i in orders.map(lambda rec: (int(rec.split('\x01')[0]), rec)).top(5): print(i)
+...
+(68883, u'68883\x012014-07-23 00:00:00.0\x015533\x01COMPLETE')
+(68882, u'68882\x012014-07-22 00:00:00.0\x0110000\x01ON_HOLD')
+(68881, u'68881\x012014-07-19 00:00:00.0\x012518\x01PENDING_PAYMENT')
+(68880, u'68880\x012014-07-13 00:00:00.0\x011117\x01COMPLETE')
+(68879, u'68879\x012014-07-09 00:00:00.0\x01778\x01COMPLETE')
+>>> for i in orders.map(lambda rec: (int(rec.split('\x01')[0]), rec)).takeOrdered(5, lambda x: x[0]): print(i)
+...
+(1, u'1\x012013-07-25 00:00:00.0\x0111599\x01CLOSED')
+(2, u'2\x012013-07-25 00:00:00.0\x01256\x01PENDING_PAYMENT')
+(3, u'3\x012013-07-25 00:00:00.0\x0112111\x01COMPLETE')
+(4, u'4\x012013-07-25 00:00:00.0\x018827\x01CLOSED')
+(5, u'5\x012013-07-25 00:00:00.0\x0111318\x01COMPLETE')
+>>> for i in orders.map(lambda rec: (int(rec.split('\x01')[0]), rec)).takeOrdered(5, lambda x: -x[0]): print(i)
+...
+(68883, u'68883\x012014-07-23 00:00:00.0\x015533\x01COMPLETE')
+(68882, u'68882\x012014-07-22 00:00:00.0\x0110000\x01ON_HOLD')
+(68881, u'68881\x012014-07-19 00:00:00.0\x012518\x01PENDING_PAYMENT')
+(68880, u'68880\x012014-07-13 00:00:00.0\x011117\x01COMPLETE')
+(68879, u'68879\x012014-07-09 00:00:00.0\x01778\x01COMPLETE')
+>>> for i in orders.takeOrdered(5, lambda x: int(x.split('\x01')[0])): print(i)
+...
+12013-07-25 00:00:00.011599CLOSED
+22013-07-25 00:00:00.0256PENDING_PAYMENT
+32013-07-25 00:00:00.012111COMPLETE
+42013-07-25 00:00:00.08827CLOSED
+52013-07-25 00:00:00.011318COMPLETE
 
+```
 # Sorting and Ranking using pyspark - by key
 
