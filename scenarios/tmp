@@ -1,0 +1,68 @@
+Warning: /usr/lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+17/03/22 07:51:28 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6-cdh5.8.0
+17/03/22 07:51:28 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+17/03/22 07:51:28 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+17/03/22 07:51:28 INFO tool.CodeGenTool: Beginning code generation
+17/03/22 07:51:28 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `categories` AS t LIMIT 1
+17/03/22 07:51:28 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `categories` AS t LIMIT 1
+17/03/22 07:51:28 INFO orm.CompilationManager: HADOOP_MAPRED_HOME is /usr/lib/hadoop-mapreduce
+Note: /tmp/sqoop-ma186082/compile/1ed13565bad53f221f9c6132572f7b4a/categories.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+17/03/22 07:51:30 INFO orm.CompilationManager: Writing jar file: /tmp/sqoop-ma186082/compile/1ed13565bad53f221f9c6132572f7b4a/categories.jar
+17/03/22 07:51:30 WARN manager.MySQLManager: It looks like you are importing from mysql.
+17/03/22 07:51:30 WARN manager.MySQLManager: This transfer can be faster! Use the --direct
+17/03/22 07:51:30 WARN manager.MySQLManager: option to exercise a MySQL-specific fast path.
+17/03/22 07:51:30 INFO manager.MySQLManager: Setting zero DATETIME behavior to convertToNull (mysql)
+17/03/22 07:51:30 INFO mapreduce.ImportJobBase: Beginning import of categories
+17/03/22 07:51:30 INFO Configuration.deprecation: mapred.jar is deprecated. Instead, use mapreduce.job.jar
+17/03/22 07:51:31 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+17/03/22 07:51:31 INFO client.RMProxy: Connecting to ResourceManager at quickstart.cloudera/127.0.0.1:8032
+17/03/22 07:51:34 INFO db.DBInputFormat: Using read commited transaction isolation
+17/03/22 07:51:34 INFO mapreduce.JobSubmitter: number of splits:1
+17/03/22 07:51:34 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1490193391784_0003
+17/03/22 07:51:34 INFO impl.YarnClientImpl: Submitted application application_1490193391784_0003
+17/03/22 07:51:34 INFO mapreduce.Job: The url to track the job: http://quickstart.cloudera:8088/proxy/application_1490193391784_0003/
+17/03/22 07:51:34 INFO mapreduce.Job: Running job: job_1490193391784_0003
+17/03/22 07:51:40 INFO mapreduce.Job: Job job_1490193391784_0003 running in uber mode : false
+17/03/22 07:51:40 INFO mapreduce.Job:  map 0% reduce 0%
+17/03/22 07:51:45 INFO mapreduce.Job:  map 100% reduce 0%
+17/03/22 07:51:45 INFO mapreduce.Job: Job job_1490193391784_0003 completed successfully
+17/03/22 07:51:45 INFO mapreduce.Job: Counters: 30
+	File System Counters
+		FILE: Number of bytes read=0
+		FILE: Number of bytes written=142917
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=87
+		HDFS: Number of bytes written=1029
+		HDFS: Number of read operations=4
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Launched map tasks=1
+		Other local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=1543168
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=3014
+		Total vcore-seconds taken by all map tasks=3014
+		Total megabyte-seconds taken by all map tasks=1543168
+	Map-Reduce Framework
+		Map input records=58
+		Map output records=58
+		Input split bytes=87
+		Spilled Records=0
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=72
+		CPU time spent (ms)=910
+		Physical memory (bytes) snapshot=141873152
+		Virtual memory (bytes) snapshot=732106752
+		Total committed heap usage (bytes)=48234496
+	File Input Format Counters 
+		Bytes Read=0
+	File Output Format Counters 
+		Bytes Written=1029
+17/03/22 07:51:45 INFO mapreduce.ImportJobBase: Transferred 1.0049 KB in 14.886 seconds (69.1254 bytes/sec)
+17/03/22 07:51:45 INFO mapreduce.ImportJobBase: Retrieved 58 records.

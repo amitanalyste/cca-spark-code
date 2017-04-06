@@ -673,3 +673,77 @@ orders = sc.textFile("/user/hive/warehouse/retail_db.db/orders")
 ```
 # Sorting and Ranking using pyspark - by key
 
+>>> l = [2,4,1,2,3,-1,5,10]
+>>> len(l)
+8
+>>> sorted(l)
+[-1, 1, 2, 2, 3, 4, 5, 10]
+>>> set(l)
+set([1, 2, 3, 4, 5, 10, -1])
+>>> sorted(l, reverse=True)
+[10, 5, 4, 3, 2, 2, 1, -1]
+>>> import itertools
+>>> itertools.islice(l, 0,2)
+<itertools.islice object at 0x145ad08>
+>>> for i in itertools.islice(l, 0,2): print(i)
+...
+2
+4
+>>> for i in range(0,2): print(l[i])
+...
+2
+4
+>>> list(itertools.islice(l, 0,2))
+[2, 4]
+>>> list(itertools.islice(sorted(l), 0,2))
+[-1, 1]
+
+## top n producs by category by price
+
+products = sc.textFile("/user/hive/warehouse/retail_db.db/products")
+productsMap = products.map(lambda rec: ( rec.split('\x01')[1], rec) )
+for i in productsMap.groupByKey().take(3): print(i);
+...
+(u'11', <pyspark.resultiterable.ResultIterable object at 0x24e0190>)
+(u'24', <pyspark.resultiterable.ResultIterable object at 0x24e03d0>)
+(u'15', <pyspark.resultiterable.ResultIterable object at 0x24e0490>)
+for i in productsMap.groupByKey().map(lambda rec : (rec[0], list(rec[1]))).take(3): print(i);
+productsGroupBy = productsMap.groupByKey()
+## sorted product gategory
+>>> for i in productsGroupBy.flatMap(lambda rec: sorted(rec[1])).take(5):       print(i)
+## sort by price now
+>>> for i in productsGroupBy.flatMap(lambda rec: sorted(rec[1], key=lambda k: k.split('\x01'))).take(5):  print(i)
+...
+21711Fitness Gear 300 lb Olympic Weight Set209.99http://images.acmesports.sports/Fitness+Gear+300+lb+Olympic+Weight+Set
+21811Elevation Training Mask 2.079.99http://images.acmesports.sports/Elevation+Training+Mask+2.0
+21911Fitness Gear Pro Utility Bench179.99http://images.acmesports.sports/Fitness+Gear+Pro+Utility+Bench
+22011Teeter Hang Ups NXT-S Inversion Table299.99http://images.acmesports.sports/Teeter+Hang+Ups+NXT-S+Inversion+Table
+22111Fitness Gear Pro Olympic Bench249.99http://images.acmesports.sports/Fitness+Gear+Pro+Olympic+Bench
+>>> for i in productsGroupBy.flatMap(lambda rec: sorted(rec[1], key=lambda k: float(k.split('\x01')[4]))).take(5):        print(i)
+...
+23511Under Armour Hustle Storm Medium Duffle Bag34.99http://images.acmesports.sports/Under+Armour+Hustle+Storm+Medium+Duffle+Bag
+21811Elevation Training Mask 2.079.99http://images.acmesports.sports/Elevation+Training+Mask+2.0
+23711Fitness Gear 7' Olympic Bar79.99http://images.acmesports.sports/Fitness+Gear+7%27+Olympic+Bar
+23211adidas Men's Powerlift 2 Training Shoe89.99http://images.acmesports.sports/adidas+Men%27s+Powerlift+2+Training+Shoe
+23811Fitness Gear Heavy Bag Stand99.99http://images.acmesports.sports/Fitness+Gear+Heavy+Bag+Stand
+>>>
+## add reverse
+>>> for i in productsGroupBy.flatMap(lambda rec: sorted(rec[1], key=lambda k: float(k.split('\x01')[4]), reverse=True)).take(5):  print(i)
+## get topN priced products by category
+def getTopDenseN(rec, topN):
+  x = [ ]
+  topNPrices = [ ]
+  prodPrices = [ ]
+  prodPricesDesc = [ ]
+  for i in rec[1]:
+    prodPrices.append(float(i.split('\x01')[4]))
+  prodPricesDesc = list(sorted(set(prodPrices), reverse=True))
+  import itertools
+  topNPrices = list(itertools.islice(prodPricesDesc, 0, topN))
+  for j in sorted(rec[1], key=lambda k: float(k.split('\x01')[4]), reverse=True):
+    if(float(j.split('\x01')[4]) in topNPrices):
+      x.append(j)
+  return (y for y in x)
+
+for i in productsMap.groupByKey().flatMap(lambda x: getTopDenseN(x, 2)).collect(): print(i)
+
