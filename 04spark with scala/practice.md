@@ -43,3 +43,13 @@ scala> sc.sequenceFile(path, classOf[IntWritable], classOf[Text]).map(rec => rec
 (2,2013-07-25 00:00:00.0)
 (3,2013-07-25 00:00:00.0)
 
+# Word count using spark scala
+[ma186082@quickstart 04spark with scala]$ hdfs dfs -put wordcount.txt
+
+val data = sc.textFile("wordcount.txt")
+val dataFlatMap = data.flatMap(x => x.split(" "))
+val dataMap = dataFlatMap.map(x => (x, 1))
+val dataReduceByKey = dataMap.reduceByKey((x,y) => x + y)
+
+dataReduceByKey.saveAsTextFile("code/wc/output")
+
